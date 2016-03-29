@@ -1,0 +1,87 @@
+﻿@{Layout = "~/_Lay.cshtml";
+    var db = Database.Open("WebPagesMovies") ;
+    var selectCommand = "SELECT * FROM Movies";
+    var searchTerm = "";
+
+    if(!Request.QueryString["size"].IsEmpty() ) {
+        selectCommand = "SELECT * FROM Movies WHERE size LIKE @0";
+         searchTerm = "%" + Request["size"] + "%";
+    }
+
+    if(!Request.QueryString["location"].IsEmpty() ) {
+        selectCommand = "SELECT * FROM Movies WHERE location LIKE @0";
+        searchTerm = "%" + Request["location"] + "%";
+    }
+    if(!Request.QueryString["rate"].IsEmpty() ) {
+        selectCommand = "SELECT * FROM Movies WHERE rate LIKE @0";
+        searchTerm = "%" + Request["rate"] + "%";
+    }
+     if(!Request.QueryString["availability"].IsEmpty() ) {
+        selectCommand = "SELECT * FROM Movies WHERE availability LIKE @0";
+        searchTerm = "%" + Request["availability"] + "%";
+    }
+    
+
+    var selectedData = db.Query(selectCommand, searchTerm);
+    var grid = new WebGrid(source: selectedData, defaultSort: "size", rowsPerPage:3);
+}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Movies</title>
+    <style type="text/css">
+      .grid { margin: 4px; border-collapse: collapse; width: 600px; }
+      .grid th, .grid td { border: 1px solid #C0C0C0; padding: 5px; }
+      .head { background-color: #E8E8E8; font-weight: bold; color: #FFF; }
+      .alt { background-color: #E8E8E8; color: #000; }
+    </style>
+  </head>
+  <body>
+    <h1></h1>
+      <form method="get">
+        <div>
+        <label for="size">size to look for:</label>
+        <input type="text" name="size" value="@Request.QueryString["size"]" />
+        <input type="Submit" value="Search size" /><br/>
+        <br/>
+        </div>
+
+        <div>
+          <label for="location">location to look for:</label>
+          <input type="text" name="location" value="@Request.QueryString["location"]" />
+          <input type="Submit" value="Search location" /><br/><br/>
+        </div>
+          <div>
+          <label for="rate">rate</label>
+          <input type="text" name="rate" value="@Request.QueryString["rate"]" />
+          <input type="Submit" value="Search rate" /><br/><br/>
+        </div>
+            <div>
+          <label for="availability">availability</label>
+          <input type="text" name="availability" value="@Request.QueryString["availability"]" />
+          <input type="Submit" value="Search availability" /><br/>
+        </div>
+      </form>
+
+    <div >
+      @grid.GetHtml(
+        tableStyle: "grid",
+        headerStyle: "head",
+        alternatingRowStyle: "alt",
+        columns: grid.Columns(
+       
+          grid.Column("location"),
+          grid.Column("size"),
+       
+          grid.Column("rate"),
+          grid.Column("availability"),
+           grid.Column(format: @<a href="~/DeleteMovie?id=@item.ID">Delete</a>)
+        )
+      )
+    </div>
+      <p>
+  
+</p>
+  </body>
+</html>

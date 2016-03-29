@@ -1,0 +1,50 @@
+﻿@{  
+Layout = "~/_Lay.cshtml";
+var db = Database.Open("WebPagesMovies");
+
+//Get images
+var imageget = "SELECT * FROM Image WHERE ID='1'";
+
+WebImage photo = null;
+var newFileName = "";
+var imagePath = "";
+var imageThumbPath  = "";
+
+if(IsPost){
+    photo = WebImage.GetImageFromRequest();
+    if(photo != null)
+    {
+        newFileName = Guid.NewGuid().ToString() + "_" +
+            Path.GetFileName(photo.FileName);
+        imagePath = @"images\" + newFileName;
+
+        photo.Save(@"~\" + imagePath);
+    }
+    var imageput = "INSERT INTO Image(image) VALUES (@0)";
+    db.Execute(imageput, Request["newFileName"]);
+}
+}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Upload</title>
+</head>
+<body>
+  <form action="" method="post" enctype="multipart/form-data">
+    <fieldset>
+      <legend> Upload Image </legend>
+      <label for="Image">Image</label>
+      <input type="file" name="Image" />
+      <br/>
+      <input type="submit" value="Upload" />
+    </fieldset>
+  </form>
+  <h1>Uploaded Image</h1>
+    @if(imagePath != ""){
+    <div class="result">
+        <img src="@imagePath" alt="image" />
+
+    </div>
+    }
+</body>
+</html>

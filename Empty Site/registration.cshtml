@@ -1,0 +1,69 @@
+﻿@{
+    Layout = "~/_Lay.cshtml";
+    Validation.RequireField("name", "You must enter a name");
+    Validation.RequireField("email", "email is required");
+    Validation.RequireField("password", "You haven't entered a password");
+
+    var name = "";
+    var email = "";
+    var password = "";
+
+    if(IsPost && Validation.IsValid()){
+       name = Request.Form["name"];
+       email = Request.Form["email"];
+       password = Request.Form["password"];
+
+       var db = Database.Open("WebPagesMovies");
+       var insertCommand = "INSERT INTO User (name, email, password) Values(@0, @1, @2)";
+       db.Execute(insertCommand, name, email, password);
+       Response.Redirect("~/mov");
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Registration</title>
+         <style type="text/css">
+    .field-validation-error {
+      font-weight:bold;
+      color:red;
+      background-color:yellow;
+     }
+    .validation-summary-errors{
+      border:2px dashed red;
+      color:red;
+      background-color:yellow;
+      font-weight:bold;
+      margin:12px;
+    }
+  </style>
+    </head>
+    <body>
+        <h1>Registration form</h1>
+  @Html.ValidationSummary()
+  <form method="post">
+    <fieldset>
+      <legend>Movie Information</legend>
+      <p><label for="name">name:</label>
+         <input type="text" name="name" value="@Request.Form["name"]" />
+          @Html.ValidationMessage("name")
+      </p>
+
+      <p><label for="email">email:</label>
+         <input type="text" name="email" value="@Request.Form["email"]" />
+         @Html.ValidationMessage("email")
+      </p>
+
+      <p><label for="password">password:</label>
+         <input type="text" name="password" value="@Request.Form["password"]" />
+          @Html.ValidationMessage("password")
+      </p>
+
+      <p><a href="~/mov"><input type="submit" name="buttonSubmit" value="register" /></a></p>
+    </fieldset>
+  </form>
+    </body>
+</html>

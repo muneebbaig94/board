@@ -1,0 +1,67 @@
+﻿@{Layout = "~/_Lay.cshtml";
+    var location = "";
+    var size = "";
+    var rate = "";
+     var availabilty = "";
+    var movieId = "";
+
+    if(!IsPost){
+        if(!Request.QueryString["ID"].IsEmpty() && Request.QueryString["ID"].IsInt()){
+            movieId = Request.QueryString["ID"];
+            var db = Database.Open("WebPagesMovies");
+            var dbCommand = "SELECT * FROM Movies WHERE ID = @0";
+            var row = db.QuerySingle(dbCommand, movieId);
+            if(row != null) {
+                location = row.location;
+                size = row.size;
+                rate = row.rate;
+                availabilty=row.availability;
+            }
+            else{
+                Validation.AddFormError("No movie was found for that ID.");
+            }
+        }
+        else{
+            Validation.AddFormError("No movie was found for that ID.");
+        }
+    }
+
+    if(IsPost && !Request["buttonDelete"].IsEmpty()){
+        movieId = Request.Form["movieId"];
+        var db = Database.Open("WebPagesMovies");
+        var deleteCommand = "DELETE FROM Movies WHERE ID = @0";
+        db.Execute(deleteCommand, movieId);
+        Response.Redirect("~/mov");
+    }
+}
+<html>
+<head>
+  <title>Delete a Movie</title>
+</head>
+<body>
+      <h1>Delete a bill board</h1>
+        @Html.ValidationSummary()
+      <p><a href="~/mov">Return to movie listing</a></p>
+
+      <form method="post">
+        <fieldset>
+        <legend>Billboard Information</legend>
+
+        <p><span>location:</span>
+         <span>@location</span></p>
+
+        <p><span>size:</span>
+         <span>@size</span></p>
+
+        <p><span>rate:</span>
+          <span>@rate</span></p>
+             <p><span>availability:</span>
+          <span>@availabilty</span></p>
+
+        <input type="hidden" name="movieid" value="@movieId" />
+        <p><input type="submit" name="buttonDelete" value="Delete billboard" /></p>
+        </fieldset>
+        
+      </form>
+    </body>
+</html>

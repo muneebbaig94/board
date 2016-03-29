@@ -1,0 +1,74 @@
+﻿@{
+Layout = "~/_Lay.cshtml";
+    Validation.RequireField("location", "You must enter a location");
+    Validation.RequireField("size", "size is required");
+    Validation.RequireField("rate", "You haven't entered a rate");
+      Validation.RequireField("availability", "You haven't entered a availability");
+    var location = "";
+    var size = "";
+    var rate = "";
+    var availability = "";
+
+    if(IsPost && Validation.IsValid()){
+       location = Request.Form["location"];
+       size = Request.Form["size"];
+       rate = Request.Form["rate"];
+       availability = Request.Form["availability"];
+
+       var db = Database.Open("WebPagesMovies");
+       var insertCommand = "INSERT INTO Movies (location, size, rate,availability) Values(@0, @1, @2,@3)";
+       db.Execute(insertCommand, location, size, rate,availability);
+       Response.Redirect("~/mov");
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Add a Billboard</title>
+      <style type="text/css">
+    .field-validation-error {
+      font-weight:bold;
+      color:red;
+      background-color:yellow;
+     }
+    .validation-summary-errors{
+      border:2px dashed red;
+      color:red;
+      background-color:yellow;
+      font-weight:bold;
+      margin:12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Add a Bill board</h1>
+  @Html.ValidationSummary()
+  <form method="post">
+    <fieldset>
+      <legend>Movie Information</legend>
+      <p><label for="location">location:</label>
+         <input type="text" name="location" value="@Request.Form["location"]" />
+          @Html.ValidationMessage("location")
+      </p>
+
+      <p><label for="size">size:</label>
+         <input type="text" name="size" value="@Request.Form["size"]" />
+         @Html.ValidationMessage("size")
+      </p>
+
+      <p><label for="rate">rate:</label>
+         <input type="text" name="rate" value="@Request.Form["rate"]" />
+          @Html.ValidationMessage("rate")
+      </p>
+        <p><label for="availability">availability:</label>
+         <input type="text" name="availability" value="@Request.Form["availability"]" />
+          @Html.ValidationMessage("availability")
+      </p>
+
+      <p><a href="~/mov"><input type="submit" name="buttonSubmit" value="Add Billboard" /></a></p>
+    </fieldset>
+  </form>
+</body>
+</html>
